@@ -106,6 +106,28 @@ namespace Microsoft.Spark.CSharp
         private static Socket InitializeSocket(int javaPort)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            //
+            // Enable TCP Loopback Fast Path on Windows
+            //
+            var p = (int)Environment.OSVersion.Platform;
+            var isWindows = (p != 4) && (p != 6) && (p != 128);
+            if (isWindows)
+            {
+                const int SIO_LOOPBACK_FAST_PATH = -1744830448;
+                var optionInValue = BitConverter.GetBytes(1);
+                try
+                {
+                    socket.IOControl(SIO_LOOPBACK_FAST_PATH, optionInValue, null);
+                }
+                catch (Exception)
+                {
+                    // If the operating system version on this machine did not
+                    // support SIO_LOOPBACK_FAST_PATH (i.e. version prior to
+                    // Windows 8 / Windows Server 2012), handle the exception
+                }
+            }
+
             socket.Connect(IPAddress.Loopback, javaPort);
             return socket;
         }
