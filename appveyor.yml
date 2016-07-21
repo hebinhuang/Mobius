@@ -18,6 +18,7 @@ install:
   - cmd: IF "%APPVEYOR_REPO_TAG%" == "true" (secure-file\tools\secure-file -decrypt build\data\ownertrustblob.txt.enc -secret %securefile% -out  build\data\ownertrustblob.txt)
   - cmd: IF "%APPVEYOR_REPO_TAG%" == "true" (if not exist "%USERPROFILE%\.m2" mkdir %USERPROFILE%\.m2)
   - cmd: IF "%APPVEYOR_REPO_TAG%" == "true" (powershell -NoProfile -ExecutionPolicy Bypass -Command "((Get-Content build\data\settings.xml) -replace '{user}', '%ossrh-user%' -replace '{pass}', '%ossrh-pass%' -replace '{passphrase}', '%gpg-pass%') | Set-Content %USERPROFILE%\.m2\settings.xml -force")
+  - cmd: dir /b /s "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\PrivateAssemblies"
 
 #build C# solution and scala project
 build_script:
